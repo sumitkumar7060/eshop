@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load cart %}
+
+{% block title %}
+cart
+{% endblock title %}
+
+{% block content %}
+  {% if cartdtls %}
+    <div class="container">
+        <table class="table table-dark table-striped text-center">
+            <tr>
+                <th>S.No.</th>
+                <th>Product Name</th>
+                <th>Product Image</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Subtotal</th>
+            </tr>
+            {% for c in cartdtls %}
+                <tr>
+                    <td>{{forloop.counter}}</td>
+                    <td>{{c.pro_name}}</td>
+                    <td><img src="{{c.pro_image.url}}" alt="" height="100px"></td>
+                    <td>Rs. {{c.price}}</td>
+                    <td>{{c|cartquantity:request.session.cart}}</td>
+                    <td>Rs. {{c|sub_total:request.session.cart}}</td>
+
+                </tr>
+            {% endfor %}
+                <tr>
+                    <td colspan="5"><h3>Payable Amount</h3></td>
+                    <td><h4>Rs. {{cartdtls|payable_total:request.session.cart}}</h4></td>                    
+                </tr>
+                <tr>
+                    <td colspan=6><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#Checkout">Checkout</button></td>
+                </tr>
+        </table>
+    </div>
+    {% else %}
+    <div class="container">
+      <h1>
+        No Product In Cart
+      </h1>
+    </div>
+    {% endif %}
+{% comment %} <--- Modal --> {% endcomment %}
+<div class="modal fade" id="Checkout" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Checkout</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+       <form  method="post" action='checkout'>
+        {% csrf_token %}
+  <div class="row mb-3">
+    <label for="addr" class="col-sm-2 col-form-label">Address:</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="addr" name="addr">
+    </div>
+  </div>
+  <div class="row mb-3">
+    <label for="mbl" class="col-sm-2 col-form-label">Mobile:</label>
+    <div class="col-sm-10">
+      <input type="number" class="form-control" id="mbl" name="mbl">
+    </div>
+  </div>
+  <button type="submit" class="btn btn-primary">Checkout</button>
+</form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}

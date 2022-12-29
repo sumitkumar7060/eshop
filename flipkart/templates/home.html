@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load cart %}
+
+{% block title %}
+home
+{% endblock title %}
+{% block content %}
+{% comment "" %}this is catagory{% endcomment %}
+<div class="container">
+  <div class="row">
+    {% for i in catagory %}
+    <div class="col text-center">
+      <a href="?cat_id={{i.id}}">
+        <img src="{{i.images.url}}" alt="not show" height="100" width="200">
+        <br>
+        <h5>{{i.name}}</h5>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+<hr>
+{% comment %}this is slider{% endcomment %}
+<div class="container" margin="3">
+  <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <img src="{% static 'images/f.webp' %}" class="d-block w-100 " height="200px" alt="flipkart">
+      </div>
+      <div class="carousel-item">
+        <img src="{% static 'images/b.jpeg' %}" class="d-block w-100" height="200px" alt="flipkart">
+      </div>
+      <div class="carousel-item">
+        <img src="{% static 'images/d.jpg' %}" class="d-block w-100" height="200px" alt="flipkart">
+      </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>
+</div>
+<div class="container my-3">
+  <div class="row">
+    {% for p in product %}
+    <div class="col text-center">
+      <div class="card" style="width: 18rem;" id={{p.id}}>
+        <img src="{{p.pro_image.url}}" class="card-img-top" alt="..." height="200">
+        <div class="card-body">
+          <h5 class="card-title">{{p.pro_name}}</h5>
+          <p class="card-text">{{p.desc}}</p>
+          <p class="card-text">Rs.{{p.price}}</p>
+          {% comment %} <a href="#" class="btn btn-primary">Add to cart</a> {% endcomment %}
+        </div>
+        <div class="card-footer">
+          {% if p|isexistincart:request.session.cart %}
+          <div class="row">
+            <div class="col-2">
+              <form action="#{{p.id}}" method="post">
+                {% csrf_token %}
+                <input type="text" name="cartid" value="{{p.id}}" hidden  >
+                <input type="text" name="minus" value="{{p.id}}" hidden>
+                <input type="submit" class="btn btn-primary m-2" value="-">
+              </form>
+            </div>
+            <div class="col-8">
+              {{p|cartquantity:request.session.cart}}
+            </div>
+            <div class="col-2">
+              <form action="#{{p.id}}" method="post">
+                {% csrf_token %}
+                <input type="text" name="cartid" value="{{p.id}}" hidden>
+                <input type="submit" class="btn btn-primary m-2" value="+" >
+              </form>
+            </div>
+          </div>
+          {% else %}
+          <form action="#{{p.id}}" method="post">
+            {% csrf_token %}
+            <input type="text" name="cartid" value="{{p.id}}" hidden>
+            <input type="submit" class="btn btn-primary m-2" value="Add to Cart">
+          </form>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>  
+</div>
+{% endblock content %}
